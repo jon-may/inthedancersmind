@@ -1,0 +1,194 @@
+﻿* Encoding: UTF-8.
+
+* NB In syntax below, change path of the data files to point to the two SAV files you have created from the CSV files
+
+GET
+  FILE='/Users/jonmay/Dropbox/Dance Research Project/COMBINED DATA/OVERALL/FinalOverallData.sav'.
+DATASET NAME WideData WINDOW=FRONT.
+
+GET
+  FILE='/Users/jonmay/Dropbox/Dance Research Project/COMBINED DATA/OVERALL/FinalOverallDataLong.sav'.
+DATASET NAME LongData WINDOW=FRONT.
+
+DATASET ACTIVATE WideData
+
+
+ *  We recruited 240 students in total, 111 to the control cohort in 2015 (76 females, 68%; 24 males, 22%; 11 did not state sex), 
+*  and 129 to the imagery cohort in 2016 (103 females, 80%, 24 males, 19%; 2 did not state sex). 
+
+CROSSTABS
+  /TABLES=sex BY Cohort BY LANG
+  /FORMAT=AVALUE TABLES
+  /CELLS=COUNT
+  /COUNT ROUND CELL.
+
+* Ages at recruitment overall ranged from 17.9 years to 28.2 years, with a median of 19.0, 
+
+FREQUENCIES VARIABLES=TestAge
+  /NTILES=10
+  /STATISTICS=STDDEV MINIMUM MAXIMUM SEMEAN MEAN MEDIAN SKEWNESS SESKEW KURTOSIS SEKURT
+  /HISTOGRAM NORMAL
+  /FORMAT=LIMIT(10)
+  /ORDER=ANALYSIS.
+
+*  and did not differ between cohorts t(216) 0.25, p = .800. 
+
+T-TEST GROUPS=Cohort(1 2)
+  /MISSING=ANALYSIS
+  /VARIABLES=TestAge
+  /CRITERIA=CI(.95).
+
+* There were 187 whose native language was English, and 53 (22%) who spoke English as a second language. 
+* All of the latter spoke English to IETL Level 6 (Competent User, with effective command of the language despite some inaccuracies).
+* (See previous CROSSTABS)
+
+* RESULTS
+* The ATTA was completed by 215 students, with a mean Total of 62.1(SD=5.9) and mean Level of 4.4 (SD=1.5), 
+
+
+FREQUENCIES VARIABLES= ATTAL ATTATOT
+  /NTILES=10
+  /STATISTICS=STDDEV MINIMUM MAXIMUM SEMEAN MEAN MEDIAN SKEWNESS SESKEW KURTOSIS SEKURT
+  /HISTOGRAM NORMAL
+  /FORMAT=LIMIT(10)
+  /ORDER=ANALYSIS.
+
+* and there was no difference in these scores between the control and imagery cohorts (Total: t(213) = 1.66, p = .130; Level: t(213) = 1.52, p = .098). 
+
+T-TEST GROUPS=Cohort(1 2)
+  /MISSING=ANALYSIS
+  /VARIABLES=ATTAL ATTATOT
+  /CRITERIA=CI(.95).
+
+*The non-native English speakers (Total M=58.8, SD=6.4; Level: M = 3.7, SD=1.5) did score lower 
+* than the native English speakers (Total M=63.1, SD=5.4, t(213) = 4.66, p < .001; Level: M = 3.7, SD=1.4, t(213) = 3.87, p < .001). 
+
+T-TEST GROUPS=LANG(0 1)
+  /MISSING=ANALYSIS
+  /VARIABLES=ATTAL ATTATOT
+  /CRITERIA=CI(.95).
+
+* Of the complete sample, 217 students completed the Flexible Thinking Tests (FTT) at the first testing session, 
+* 188 at the second session, and 126 at the final session. 
+
+ DATASET  ACTIVATE LongData.
+
+SORT CASES  BY Session.
+SPLIT FILE SEPARATE BY Session.
+FREQUENCIES VARIABLES=cab1a
+  /NTILES=4
+  /NTILES=10
+  /STATISTICS=STDDEV VARIANCE MINIMUM MAXIMUM SEMEAN MEAN MEDIAN SKEWNESS SESKEW KURTOSIS SEKURT
+  /HISTOGRAM NORMAL
+  /FORMAT=LIMIT(10)
+  /ORDER=ANALYSIS.
+
+* Combining the data from all sessions, FTT scores were normally distributed (skew = .35, kurtosis = .10) 
+* and ranged from 3 to 40, with a mean of 19.6. 
+
+SPLIT FILE OFF.
+FREQUENCIES VARIABLES=cab1a
+  /NTILES=4
+  /NTILES=10
+  /STATISTICS=STDDEV VARIANCE MINIMUM MAXIMUM SEMEAN MEAN MEDIAN SKEWNESS SESKEW KURTOSIS SEKURT
+  /HISTOGRAM NORMAL
+  /FORMAT=LIMIT(10)
+  /ORDER=ANALYSIS.
+
+
+ * The five different versions of the FTT were each completed by between 99 and 109 different individuals over the course of the study, 
+* with people completing between one and three tests. 
+ * A simple oneway ANOVA showed no difference in means between the five versions F(4, 526) = 1.39, p = .237, etasq = .01; 
+
+UNIANOVA cab1a BY Cab1No
+  /METHOD=SSTYPE(3)
+  /INTERCEPT=INCLUDE
+  /POSTHOC=Cab1No(BONFERRONI)
+  /PRINT=OPOWER ETASQ DESCRIPTIVE
+  /CRITERIA=ALPHA(.05)
+  /DESIGN=Cab1No.
+
+
+*a linear mixed model with participant added as a random effect also showed no differences
+* between the versions, entered as a fixed effect F(4, 520.6) = 1.31, p = .265, 
+*and none of the versions’ coefficients were statistically significant.
+
+MIXED cab1a BY Cab1No
+  /CRITERIA=CIN(95) MXITER(100) MXSTEP(10) SCORING(1) SINGULAR(0.000000000001) HCONVERGE(0,
+    ABSOLUTE) LCONVERGE(0, ABSOLUTE) PCONVERGE(0.000001, ABSOLUTE)
+  /FIXED=Cab1No | SSTYPE(3)
+  /METHOD=REML
+  /PRINT=SOLUTION TESTCOV
+  /RANDOM=Cab1No | SUBJECT(CODE) COVTYPE(VC).
+
+
+ * As with the ATTA, the FTT scores were lower for non-native English speakers 
+(first session: M=14.0, SD=4.9; second: M=18.0, SD=6.3; final: M=18.1, SD=6.0) than for native English speakers
+ (first session: M=18.7, SD=5.8, t(215) = 5.10, p < .001; second: M=21.4, SD=5.7, t(186)=2.66, p = .001; 
+final: M=22.4, SD=6.5, t(124) = 3.00, p = .003).
+
+SORT CASES  BY Session.
+SPLIT FILE SEPARATE BY Session.
+T-TEST GROUPS=LANG(0 1)
+  /MISSING=ANALYSIS
+  /VARIABLES=cab1a
+  /CRITERIA=CI(.95).
+
+
+* The control cohort and the imagery cohort did not differ 
+in FTT score at anhy of the testing sessions (first: t(215) = 1.48, p = .141; second: t(186)=0.38, p=.707;
+final: t(124)=1.03, p=.305) 
+
+T-TEST GROUPS=Cohort(1 2)
+  /MISSING=ANALYSIS
+  /VARIABLES=cab1a
+  /CRITERIA=CI(.95).
+
+ DATASET  ACTIVATE WideData.
+
+ * We had not expected to detect any differential change in the two cohorts’ FTT scores by the second session, 
+immediately after the imagery training, and an ANOVA comparing the change from the first to second 
+sessions showed just a main an effect of time F(1,169) = 53.4, p < .001, etasq = .24, 
+no effect of cohort F<1, nor an interaction of time by cohort F<1.
+
+GLM cab1a cab2a BY Cohort
+  /WSFACTOR=time 2 Polynomial
+  /METHOD=SSTYPE(3)
+  /PLOT=PROFILE(time*Cohort)
+  /EMMEANS=TABLES(OVERALL)
+  /EMMEANS=TABLES(Cohort)
+  /EMMEANS=TABLES(time)
+  /EMMEANS=TABLES(Cohort*time)
+  /PRINT=DESCRIPTIVE ETASQ OPOWER
+  /CRITERIA=ALPHA(.05)
+  /WSDESIGN=time
+  /DESIGN=Cohort.
+
+
+ * However, we had predicted that FTT scores would differ by the time of the third session. 
+ * An ANOVA comparing the change from first to final session showed both an effect of session F(1,115) = 21.5, p < .001, etasq = .16, 
+and an interaction with cohort F(1,115) = 4.49, p = .036, etasq = .04; again there was no main effect of cohort F<1. 
+
+GLM cab1a cab3a BY Cohort
+  /WSFACTOR=time 2 Polynomial
+  /METHOD=SSTYPE(3)
+  /PLOT=PROFILE(time*Cohort)
+  /EMMEANS=TABLES(OVERALL)
+  /EMMEANS=TABLES(Cohort)
+  /EMMEANS=TABLES(time)
+  /EMMEANS=TABLES(Cohort*time)
+  /PRINT=DESCRIPTIVE ETASQ OPOWER
+  /CRITERIA=ALPHA(.05)
+  /WSDESIGN=time
+  /DESIGN=Cohort.
+
+ * Two-tailed post hoc t tests on the students who completed both of these sessions showed that 
+ the change in the control cohort’s FTT scores was not statistically significant t(56) = 1.79, p = .079, 
+but that  the imagery group did improve t(59) = 4.76, p < .001, (see figure X).
+
+SORT CASES  BY Cohort.
+SPLIT FILE SEPARATE BY Cohort.
+T-TEST PAIRS=cab1a WITH cab3a (PAIRED)
+  /CRITERIA=CI(.9500)
+  /MISSING=ANALYSIS.
+
