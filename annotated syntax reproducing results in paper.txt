@@ -55,15 +55,15 @@ FREQUENCIES VARIABLES= ATTAL ATTATOT
   /FORMAT=LIMIT(10)
   /ORDER=ANALYSIS.
 
-* and there was no difference in these scores between the control and imagery cohorts (Total: t(213) = 1.66, p = .130; Level: t(213) = 1.52, p = .098). 
+* and there was no difference in these scores between the control and imagery cohorts (Total: t(213) = 1.52, p = .130; Level: t(213) = 1.66, p = .098). 
 
 T-TEST GROUPS=Cohort(1 2)
   /MISSING=ANALYSIS
-  /VARIABLES=ATTAL ATTATOT
+  /VARIABLES=ATTATOT ATTAL
   /CRITERIA=CI(.95).
 
 *The non-native English speakers (Total M=58.8, SD=6.4; Level: M = 3.7, SD=1.5) did score lower 
-* than the native English speakers (Total M=63.1, SD=5.4, t(213) = 4.66, p < .001; Level: M = 3.7, SD=1.4, t(213) = 3.87, p < .001). 
+* than the native English speakers (Total M=63.1, SD=5.4, t(213) = 4.66, p < .001; Level: M = 4.6, SD=1.4, t(213) = 3.87, p < .001). 
 
 T-TEST GROUPS=LANG(0 1)
   /MISSING=ANALYSIS
@@ -85,7 +85,7 @@ FREQUENCIES VARIABLES=cab1a
   /FORMAT=LIMIT(10)
   /ORDER=ANALYSIS.
 
-* Combining the data from all sessions, FTT scores were normally distributed (skew = .35, kurtosis = .10) 
+* Combining the data from all sessions, FTT scores were normally distributed (skew = .35, kurtosis = .07) 
 * and ranged from 3 to 40, with a mean of 19.6. 
 
 SPLIT FILE OFF.
@@ -126,7 +126,7 @@ MIXED cab1a BY Cab1No
 
  * As with the ATTA, the FTT scores were lower for non-native English speakers 
 (first session: M=14.0, SD=4.9; second: M=18.0, SD=6.3; final: M=18.1, SD=6.0) than for native English speakers
- (first session: M=18.7, SD=5.8, t(215) = 5.10, p < .001; second: M=21.4, SD=5.7, t(186)=2.66, p = .001; 
+ (first session: M=18.7, SD=5.8, t(215) = 5.10, p < .001; second: M=21.4, SD=5.7, t(186)=3.40, p = .001; 
 final: M=22.4, SD=6.5, t(124) = 3.00, p = .003).
 
 SORT CASES  BY Session.
@@ -138,7 +138,7 @@ T-TEST GROUPS=LANG(0 1)
 
 
 * The control cohort and the imagery cohort did not differ 
-in FTT score at anhy of the testing sessions (first: t(215) = 1.48, p = .141; second: t(186)=0.38, p=.707;
+in FTT score at any of the testing sessions (first: t(215) = 1.48, p = .141; second: t(186)=0.38, p=.707;
 final: t(124)=1.03, p=.305) 
 
 T-TEST GROUPS=Cohort(1 2)
@@ -184,7 +184,7 @@ GLM cab1a cab3a BY Cohort
   /WSDESIGN=time
   /DESIGN=Cohort.
 
- * Two-tailed post hoc t tests on the students who completed both of these sessions showed that 
+ * Two-tailed t tests on the students who completed both the first and final sessions showed that 
  the change in the control cohort’s FTT scores was not statistically significant t(56) = 1.79, p = .079, 
 but that  the imagery group did improve t(59) = 4.76, p < .001, (see figure X).
 
