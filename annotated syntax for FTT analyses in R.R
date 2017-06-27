@@ -1,6 +1,7 @@
 library(psych)
 library(stats)
-
+library(lme4)
+library(readr)
 
 WideData <- read_csv("http://github.com/jon-may/inthedancersmind/raw/master/FinalOverallData.csv")
 
@@ -24,7 +25,10 @@ attach(WideData)
 table(Cohort)
 table(sex, Cohort)
 
-
+# 204 were recruited from Trinity-Laban Conservatoire of Music and Dance; 
+# 36 from Coventry University. 
+table(GROUP)
+table(GROUP,Cohort)
 
 # Ages at recruitment overall ranged from 17.9 years to 28.2 years, 
 # with a median of 19.0, 
@@ -34,6 +38,11 @@ describe(TestAge)
 c1<-WideData[Cohort==1,]
 c2<-WideData[Cohort==2,]
 t.test(c1$TestAge,c2$TestAge,var.equal=TRUE)
+
+# or institution  t(238) = 0.44, p = .662 
+cov<-WideData[GROUP=="COV",]
+tl<-WideData[GROUP!="COV",]
+t.test(cov$TestAge,tl$TestAge,var.equal=TRUE)
 
 # There were 187 whose native language was English, 
 # and 53 (22%) who spoke English as a second language. 
@@ -53,6 +62,10 @@ describe(ATTAL)
 
 t.test(c1$ATTATOT,c2$ATTATOT,var.equal = TRUE)
 t.test(c1$ATTAL,c2$ATTAL,var.equal = TRUE)
+
+#  or the institutions (Total: t(213) = 1.79, p = .074; Level: t(213) = 1.79, p = .075)
+t.test(cov$ATTATOT,tl$ATTATOT,var.equal = TRUE)
+t.test(cov$ATTAL,tl$ATTAL,var.equal = TRUE)
 
 # 
 # The non-native English speakers (Total M=58.8, SD=6.4; Level: M = 3.7, SD=1.5) 
@@ -101,7 +114,9 @@ etaSquared(oneway1)
 # 
 # HAVE NOT DONE THIS YET
 
-
+     
+     
+     
 # As with the ATTA, the FTT scores were lower for non-native English speakers 
 # (first session: M=14.0, SD=4.9; second: M=18.0, SD=6.3; final: M=18.1, SD=6.0) 
 # than for native English speakers 
